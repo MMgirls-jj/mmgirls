@@ -31,6 +31,37 @@
       border: 1px solid #ffd6e4;
       outline: none;
       font-size: 16px;
+      margin-bottom: 30px;
+    }
+
+    .price-table {
+      width: 100%;
+      max-width: 750px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .price-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .price-table th,
+    .price-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .price-table th {
+      color: #ff7ba5;
+      font-weight: bold;
+    }
+
+    .price-table tr:last-child td {
+      border-bottom: none;
     }
   </style>
 </head>
@@ -39,6 +70,40 @@
   <img src="logo.png" class="logo" alt="MM Girls Logo">
   <h1>MM Girls</h1>
   <p class="desc">香港美妝價格比較平台｜每日自動更新</p>
+
   <input type="text" class="search" placeholder="搜尋產品：Bioderma、防曬、護膚品...">
+
+  <div class="price-table">
+    <table>
+      <tr>
+        <th>產品</th>
+        <th>Sasa</th>
+        <th>松本清</th>
+        <th>屈臣氏</th>
+        <th>萬寧</th>
+      </tr>
+      <tr>
+        <td>Bioderma 卸妝水 500ml</td>
+        <td>HK$148</td>
+        <td>HK$145</td>
+        <td>HK$169</td>
+        <td>HK$175</td>
+      </tr>
+      <tr>
+        <td>Anessa 防曬 60ml</td>
+        <td>HK$189</td>
+        <td>HK$185</td>
+        <td>HK$219</td>
+        <td>HK$225</td>
+      </tr>
+      <tr>
+        <td>Hada Labo 保濕化妝水</td>
+        <td>HK$79</td>
+        <td>HK$75</td>
+        <td>HK$89</td>
+        <td>HK$89</td>
+      </tr>
+    </table>
+  </div>
 </body>
 </html>
