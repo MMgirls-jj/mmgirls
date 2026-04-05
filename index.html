@@ -28,7 +28,7 @@
       width: 80%;
       max-width: 400px;
       border-radius: 30px;
-      border: 1px solid #ffd6e4;
+      border: 1px solid #ffd6e0;
       outline: none;
       font-size: 16px;
       margin-bottom: 30px;
@@ -36,7 +36,7 @@
 
     .price-table {
       width: 100%;
-      max-width: 750px;
+      max-width: 850px;
       margin: 0 auto;
       background: white;
       border-radius: 16px;
@@ -52,10 +52,18 @@
     th, td {
       padding: 12px;
       text-align: center;
+      vertical-align: middle;
     }
 
     th {
       color: #ff7ba5;
+    }
+
+    .product-img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      border-radius: 8px;
     }
   </style>
 </head>
@@ -70,6 +78,7 @@
   <div class="price-table">
     <table>
       <tr>
+        <th>圖片</th>
         <th>產品</th>
         <th>Sasa</th>
         <th>松本清</th>
@@ -77,18 +86,20 @@
         <th>萬寧</th>
       </tr>
       <tr>
+        <td><img src="https://static.sasa.com.hk/upload/2025/04/04/407001_1_638488220476022449849.jpg" class="product-img"></td>
+        <td>CeraVe SA水楊酸煥膚潔膚露 473ml</td>
+        <td>HK$260</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td><img src="https://via.placeholder.com/50" class="product-img"></td>
         <td>Bioderma 卸妝水 500ml</td>
         <td>HK$148</td>
         <td>HK$145</td>
         <td>HK$169</td>
         <td>HK$175</td>
-      </tr>
-      <tr>
-        <td>Anessa 防曬 60ml</td>
-        <td>HK$189</td>
-        <td>HK$185</td>
-        <td>HK$219</td>
-        <td>HK$225</td>
       </tr>
     </table>
   </div>
