@@ -76,7 +76,7 @@
   <input type="text" class="search" placeholder="搜尋產品：Bioderma、防曬、護膚品...">
 
   <div class="price-table">
-    <table>
+    <table id="productTable">
       <tr>
         <th>圖片</th>
         <th>產品</th>
@@ -85,23 +85,47 @@
         <th>屈臣氏</th>
         <th>萬寧</th>
       </tr>
-      <tr>
-        <td><img src="https://static.sasa.com.hk/upload/2025/04/04/407001_1_638488220476022449849.jpg" class="product-img"></td>
-        <td>CeraVe SA水楊酸煥膚潔膚露 473ml</td>
-        <td>HK$260</td>
-        <td>-</td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td><img src="https://via.placeholder.com/50" class="product-img"></td>
-        <td>Bioderma 卸妝水 500ml</td>
-        <td>HK$148</td>
-        <td>HK$145</td>
-        <td>HK$169</td>
-        <td>HK$175</td>
-      </tr>
     </table>
   </div>
+
+  <script>
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7OjC0en509arFBpqCHUZyQUTBvqyDNK9A28mjtmjKVsskJ7B7YIrtglkdUfBG8HP5OsCBa7eKOKw1/pubhtml";
+
+    fetch(sheetUrl)
+      .then(res => res.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        const rows = doc.querySelectorAll("table tr");
+
+        const table = document.getElementById("productTable");
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].querySelectorAll("td");
+          if (cols.length < 6) continue;
+
+          const name = cols[0].innerText.trim();
+          const imgUrl = cols[1].innerText.trim();
+          const sasa = cols[2].innerText.trim();
+          const matsu = cols[3].innerText.trim();
+          const wats = cols[4].innerText.trim();
+          const mann = cols[5].innerText.trim();
+
+          const tr = document.createElement("tr");
+
+          tr.innerHTML = `
+            <td><img src="${imgUrl}" class="product-img"></td>
+            <td>${name}</td>
+            <td>HK$${sasa}</td>
+            <td>${matsu ? 'HK$'+matsu : '-'}</td>
+            <td>${wats ? 'HK$'+wats : '-'}</td>
+            <td>${mann ? 'HK$'+mann : '-'}</td>
+          `;
+
+          table.appendChild(tr);
+        }
+      })
+      .catch(err => console.log("Error loading sheet:", err));
+  </script>
 </body>
 </html>
