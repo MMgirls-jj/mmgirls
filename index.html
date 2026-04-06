@@ -101,45 +101,56 @@
   </div>
 
   <script>
-    // 產品數據（直接從你的 Google Sheet 讀取）
-    let products = [
-      {
-        name: "CeraVe SA水楊酸煥膚潔膚露 473ml",
-        img: "https://via.placeholder.com/50/FFC0CB/FFFFFF?text=Product",
-        sasa: "260",
-        matsu: "",
-        wats: "",
-        mann: ""
-      },
-      {
-        name: "Bioderma 卸妝水 500ml",
-        img: "https://via.placeholder.com/50/FFC0CB/FFFFFF?text=Product",
-        sasa: "148",
-        matsu: "145",
-        wats: "169",
-        mann: "175"
-      }
-    ];
+    let allProducts = [];
+    const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7OjC0en509arFBpqCHUZyQUTBvqyDNK9A28mjtmjKVsskJ7B7YIrtglkdUfBG8HP5OsCBa7eKOKw1/pubhtml";
 
+    // 從 Google Sheet 讀取真實數據
+    fetch(sheetUrl)
+      .then(res => res.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+        const rows = doc.querySelectorAll("table tr");
+
+        allProducts = [];
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].querySelectorAll("td");
+          if (cols.length < 6) continue;
+
+          const name = cols[0].innerText.trim();
+          const img = cols[1].innerText.trim();
+          const sasa = cols[2].innerText.trim();
+          const matsu = cols[3].innerText.trim();
+          const wats = cols[4].innerText.trim();
+          const mann = cols[5].innerText.trim();
+
+          allProducts.push({ name, img, sasa, matsu, wats, mann });
+        }
+      });
+
+    // 搜尋功能
     const searchInput = document.getElementById("searchInput");
     const productBody = document.getElementById("productBody");
     const resultTable = document.getElementById("resultTable");
     const emptyHint = document.getElementById("emptyHint");
 
-    searchInput.addEventListener("input", function () {
-      const key = this.value.toLowerCase().trim();
+    searchInput.addEventListener("input", function() {
+      const keyword = this.value.toLowerCase().trim();
       productBody.innerHTML = "";
 
-      if (!key) {
+      if (keyword.length < 1) {
         resultTable.style.display = "none";
         emptyHint.style.display = "block";
         emptyHint.innerText = "請輸入產品名稱搜尋";
         return;
       }
 
-      const matched = products.filter(p => p.name.toLowerCase().includes(key));
+      const filtered = allProducts.filter(p =>
+        p.name.toLowerCase().includes(keyword)
+      );
 
-      if (matched.length === 0) {
+      if (filtered.length === 0) {
         resultTable.style.display = "none";
         emptyHint.style.display = "block";
         emptyHint.innerText = "找不到相關產品";
@@ -149,15 +160,15 @@
       emptyHint.style.display = "none";
       resultTable.style.display = "block";
 
-      matched.forEach(item => {
+      filtered.forEach(item => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td><img src="${item.img}" class="product-img"></td>
           <td>${item.name}</td>
-          <td>${item.sasa ? "HK$" + item.sasa : "-"}</td>
-          <td>${item.matsu ? "HK$" + item.matsu : "-"}</td>
-          <td>${item.wats ? "HK$" + item.wats : "-"}</td>
-          <td>${item.mann ? "HK$" + item.mann : "-"}</td>
+          <td>HK$${item.sasa || '-'}</td>
+          <td>${item.matsu ? 'HK$'+item.matsu : '-'}</td>
+          <td>${item.wats ? 'HK$'+item.wats : '-'}</td>
+          <td>${item.mann ? 'HK$'+item.mann : '-'}</td>
         `;
         productBody.appendChild(tr);
       });
