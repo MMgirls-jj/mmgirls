@@ -23,7 +23,7 @@
       color: #666;
       margin-bottom: 30px;
     }
-    .search {
+    .search-box {
       padding: 12px 20px;
       width: 80%;
       max-width: 400px;
@@ -42,6 +42,7 @@
       border-radius: 16px;
       padding: 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      display: none; /* 預設隱藏 */
     }
 
     table {
@@ -65,6 +66,12 @@
       object-fit: cover;
       border-radius: 8px;
     }
+
+    .empty-hint {
+      color: #999;
+      padding: 20px;
+      display: none;
+    }
   </style>
 </head>
 
@@ -73,24 +80,31 @@
   <h1>MM Girls</h1>
   <p class="desc">香港美妝價格比較平台｜每日自動更新</p>
 
-  <input type="text" class="search" placeholder="搜尋產品：Bioderma、防曬、護膚品...">
+  <input type="text" id="searchInput" class="search-box" placeholder="搜尋產品：Bioderma、防曬、護膚品...">
 
-  <div class="price-table">
-    <table id="productTable">
-      <tr>
-        <th>圖片</th>
-        <th>產品</th>
-        <th>Sasa</th>
-        <th>松本清</th>
-        <th>屈臣氏</th>
-        <th>萬寧</th>
-      </tr>
+  <div class="empty-hint" id="emptyHint">請輸入產品名稱搜尋</div>
+
+  <div class="price-table" id="resultTable">
+    <table>
+      <thead>
+        <tr>
+          <th>圖片</th>
+          <th>產品</th>
+          <th>Sasa</th>
+          <th>松本清</th>
+          <th>屈臣氏</th>
+          <th>萬寧</th>
+        </tr>
+      </thead>
+      <tbody id="productBody"></tbody>
     </table>
   </div>
 
   <script>
+    let allProducts = [];
     const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7OjC0en509arFBpqCHUZyQUTBvqyDNK9A28mjtmjKVsskJ7B7YIrtglkdUfBG8HP5OsCBa7eKOKw1/pubhtml";
 
+    // 載入 Google Sheet 全部產品
     fetch(sheetUrl)
       .then(res => res.text())
       .then(html => {
@@ -98,34 +112,67 @@
         const doc = parser.parseFromString(html, "text/html");
         const rows = doc.querySelectorAll("table tr");
 
-        const table = document.getElementById("productTable");
-
         for (let i = 1; i < rows.length; i++) {
           const cols = rows[i].querySelectorAll("td");
           if (cols.length < 6) continue;
 
-          const name = cols[0].innerText.trim();
-          const imgUrl = cols[1].innerText.trim();
-          const sasa = cols[2].innerText.trim();
-          const matsu = cols[3].innerText.trim();
-          const wats = cols[4].innerText.trim();
-          const mann = cols[5].innerText.trim();
-
-          const tr = document.createElement("tr");
-
-          tr.innerHTML = `
-            <td><img src="${imgUrl}" class="product-img"></td>
-            <td>${name}</td>
-            <td>HK$${sasa}</td>
-            <td>${matsu ? 'HK$'+matsu : '-'}</td>
-            <td>${wats ? 'HK$'+wats : '-'}</td>
-            <td>${mann ? 'HK$'+mann : '-'}</td>
-          `;
-
-          table.appendChild(tr);
+          const product = {
+            name: cols[0].innerText.trim(),
+            img: cols[1].innerText.trim(),
+            sasa: cols[2].innerText.trim(),
+            matsu: cols[3].innerText.trim(),
+            wats: cols[4].innerText.trim(),
+            mann: cols[5].innerText.trim()
+          };
+          allProducts.push(product);
         }
+        console.log("已載入產品數量：", allProducts.length);
       })
-      .catch(err => console.log("Error loading sheet:", err));
+      .catch(err => console.log("Error:", err));
+
+    // 搜尋功能
+    const searchInput = document.getElementById("searchInput");
+    const productBody = document.getElementById("productBody");
+    const resultTable = document.getElementById("resultTable");
+    const emptyHint = document.getElementById("emptyHint");
+
+    searchInput.addEventListener("input", function() {
+      const keyword = this.value.toLowerCase().trim();
+      productBody.innerHTML = "";
+
+      if (keyword.length < 1) {
+        resultTable.style.display = "none";
+        emptyHint.style.display = "block";
+        return;
+      }
+
+      const filtered = allProducts.filter(p =>
+        p.name.toLowerCase().includes(keyword)
+      );
+
+      if (filtered.length === 0) {
+        resultTable.style.display = "none";
+        emptyHint.innerText = "找不到相關產品";
+        emptyHint.style.display = "block";
+        return;
+      }
+
+      emptyHint.style.display = "none";
+      resultTable.style.display = "block";
+
+      filtered.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><img src="${item.img}" class="product-img"></td>
+          <td>${item.name}</td>
+          <td>${item.sasa ? 'HK$' + item.sasa : '-'}</td>
+          <td>${item.matsu ? 'HK$' + item.matsu : '-'}</td>
+          <td>${item.wats ? 'HK$' + item.wats : '-'}</td>
+          <td>${item.mann ? 'HK$' + item.mann : '-'}</td>
+        `;
+        productBody.appendChild(tr);
+      });
+    });
   </script>
 </body>
 </html>
